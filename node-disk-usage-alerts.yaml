@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-disk-usage-alerts
+  namespace: prometheus
+spec:
+  groups:
+  - name: node.rules
+    rules:
+    - alert: NodeDiskUsageHigh
+      expr: (node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} - node_filesystem_free_bytes{fstype!~"tmpfs|overlay"}) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node disk usage is high on {{ $labels.instance }}"
+        description: "Disk usage is above 80% on {{ $labels.instance }}.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"
+    - alert: NodeDiskUsageCritical
+      expr: (node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} - node_filesystem_free_bytes{fstype!~"tmpfs|overlay"}) / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} * 100 > 90
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Node disk usage is critical on {{ $labels.instance }}"
+        description: "Disk usage is above 90% on {{ $labels.instance }}.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

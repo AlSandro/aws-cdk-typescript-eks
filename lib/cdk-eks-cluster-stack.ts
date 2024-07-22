@@ -38,57 +38,58 @@ export class CdkEksClusterStack extends cdk.Stack {
       ],
     });
 
-  // Initialize a new EKS cluster within the given scope (usually an AWS CDK stack)
-  this.cluster = new eks.Cluster(this, 'Cluster', {
-    // Specify the VPC where the EKS cluster should be deployed
-    vpc: vpc,
+    // Initialize a new EKS cluster within the given scope (usually an AWS CDK stack)
+    this.cluster = new eks.Cluster(this, 'Cluster', {
+      // Specify the VPC where the EKS cluster should be deployed
+      vpc: vpc,
 
-    // Define subnet settings for the cluster. Here, it uses private subnets with egress access and ensures one subnet per availability zone
-    vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true }],
+      // Define subnet settings for the cluster. Here, it uses private subnets with egress access and ensures one subnet per availability zone
+      vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, onePerAz: true }],
 
-    // Set the Kubernetes version for the cluster, derived from the defaultNodeGroup's eksVersion property
-    version: defaultNodeGroup.eksVersion,
+      // Set the Kubernetes version for the cluster, derived from the defaultNodeGroup's eksVersion property
+      version: defaultNodeGroup.eksVersion,
 
-    // Add a custom Lambda layer for kubectl commands, allowing you to interact with the cluster. This specifies the version of kubectl to use
-    kubectlLayer: new KubectlV28Layer(this, 'kubectl'),
+      // Add a custom Lambda layer for kubectl commands, allowing you to interact with the cluster. This specifies the version of kubectl to use
+      kubectlLayer: new KubectlV28Layer(this, 'kubectl'),
 
-    // Create a new KMS key for encrypting Kubernetes secrets, enhancing the security of sensitive data in your cluster
-    secretsEncryptionKey: new kms.Key(this, 'EKS-Secrets-Encryption-Key', {
-      enableKeyRotation: true, // Automatically rotate the encryption key to improve security
-      description: 'EKS Secrets Encryption Key', // A clear description of the key's purpose
-      alias: `EKS-Secrets-Encryption-Key-${defaultNodeGroup.clusterName}`, // A unique alias for the key, incorporating the cluster name for easy identification
-    }),
+      // Create a new KMS key for encrypting Kubernetes secrets, enhancing the security of sensitive data in your cluster
+      secretsEncryptionKey: new kms.Key(this, 'EKS-Secrets-Encryption-Key', {
+        enableKeyRotation: true, // Automatically rotate the encryption key to improve security
+        description: 'EKS Secrets Encryption Key', // A clear description of the key's purpose
+        alias: `EKS-Secrets-Encryption-Key-${defaultNodeGroup.clusterName}`, // A unique alias for the key, incorporating the cluster name for easy identification
+      }),
 
-    // Set the name of the cluster, using the clusterName property from defaultNodeGroup
-    clusterName: defaultNodeGroup.clusterName,
+      // Set the name of the cluster, using the clusterName property from defaultNodeGroup
+      clusterName: defaultNodeGroup.clusterName,
 
-    // Enable logging for various Kubernetes components to help with monitoring and troubleshooting
-    clusterLogging: [
-      eks.ClusterLoggingTypes.API,
-      eks.ClusterLoggingTypes.AUDIT,
-      eks.ClusterLoggingTypes.AUTHENTICATOR,
-      eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
-      eks.ClusterLoggingTypes.SCHEDULER,
-    ],
-    // Configure the cluster's API server endpoint access. This setting allows both public and private access
-    endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
+      // Enable logging for various Kubernetes components to help with monitoring and troubleshooting
+      clusterLogging: [
+        eks.ClusterLoggingTypes.API,
+        eks.ClusterLoggingTypes.AUDIT,
+        eks.ClusterLoggingTypes.AUTHENTICATOR,
+        eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
+        eks.ClusterLoggingTypes.SCHEDULER,
+      ],
+      // Configure the cluster's API server endpoint access. This setting allows both public and private access
+      endpointAccess: eks.EndpointAccess.PUBLIC_AND_PRIVATE,
 
-    // Set the default number of worker nodes in the cluster, based on the desiredSize from defaultNodeGroup
-    defaultCapacity: defaultNodeGroup.desiredSize,
+      // Set the default number of worker nodes in the cluster, based on the desiredSize from defaultNodeGroup
+      defaultCapacity: defaultNodeGroup.desiredSize,
 
-    // Specify the instance type for the default worker nodes, converting the instanceType from defaultNodeGroup to an ec2.InstanceType object
-    defaultCapacityInstance: new ec2.InstanceType(defaultNodeGroup.instanceType.toString()),
+      // Specify the instance type for the default worker nodes, converting the instanceType from defaultNodeGroup to an ec2.InstanceType object
+      defaultCapacityInstance: new ec2.InstanceType(defaultNodeGroup.instanceType.toString()),
 
-    // Apply tags to the EKS cluster resources for organizational, billing, or management purposes
-    tags: {
-      'Name': `${defaultNodeGroup.clusterName}`, // Name tag with the cluster name
-      'Environment': 'dev', // Example environment tag
-      'Owner': 'alsandr', // Example owner tag
-      ['kubernetes.io/cluster/' + defaultNodeGroup.clusterName]: 'owned', // Tag required by Kubernetes for resource management within the cluster
-    },
-  });
+      // Apply tags to the EKS cluster resources for organizational, billing, or management purposes
+      tags: {
+        'Name': `${defaultNodeGroup.clusterName}`, // Name tag with the cluster name
+        'Environment': 'dev', // Example environment tag
+        'Owner': 'alsandr', // Example owner tag
+        ['kubernetes.io/cluster/' + defaultNodeGroup.clusterName]: 'owned', // Tag required by Kubernetes for resource management within the cluster
+      },
+    });
 
-    // Bottlerocket nodegroup
+
+    // bottlerocket nodegroup with EBS
     const ng_bottlerocket = new eks.Nodegroup(this, 'NodegroupBottlerocket_128', {
       cluster: this.cluster,
       instanceTypes: [new ec2.InstanceType(defaultNodeGroup.instanceType.toString())],
@@ -116,26 +117,27 @@ export class CdkEksClusterStack extends cdk.Stack {
         ],
       },
     });
-
-  const ng_bottlerocket_ebs = new eks.Nodegroup(this, 'NodegroupBottlerocketEBS_128', {
-    cluster: this.cluster,
-    instanceTypes: [new ec2.InstanceType(defaultNodeGroup.instanceType.toString())],
-    amiType: eks.NodegroupAmiType.BOTTLEROCKET_X86_64,
-    capacityType: eks.CapacityType.SPOT,
-    minSize: bottlerocketNodeGroup.minSize,
-    maxSize: bottlerocketNodeGroup.maxSize,
-    desiredSize: bottlerocketNodeGroup.desiredSize,
-    launchTemplateSpec: {
-      id: launchTemplate.ref,
-      version: launchTemplate.attrLatestVersionNumber,
-    },
-    tags: {
-      'Name': `${defaultNodeGroup.clusterName}-bottlerocket-ebs`,
-      ['kubernetes.io/cluster/' + defaultNodeGroup.clusterName]: 'owned',
-    },
-  });
+   
+    // Bottlerocket nodegroup
+    const ng_bottlerocket_ebs = new eks.Nodegroup(this, 'NodegroupBottlerocketEBS_128', {
+      cluster: this.cluster,
+      instanceTypes: [new ec2.InstanceType(defaultNodeGroup.instanceType.toString())],
+      amiType: eks.NodegroupAmiType.BOTTLEROCKET_X86_64,
+      capacityType: eks.CapacityType.SPOT,
+      minSize: bottlerocketNodeGroup.minSize,
+      maxSize: bottlerocketNodeGroup.maxSize,
+      desiredSize: bottlerocketNodeGroup.desiredSize,
+      launchTemplateSpec: {
+        id: launchTemplate.ref,
+        version: launchTemplate.attrLatestVersionNumber,
+      },
+      tags: {
+        'Name': `${defaultNodeGroup.clusterName}-bottlerocket-ebs`,
+        ['kubernetes.io/cluster/' + defaultNodeGroup.clusterName]: 'owned',
+      },
+    });
     
-    // bottlerocket nodegroup with EBS
+
 
     // Helm charts deployment
     // Single chart 

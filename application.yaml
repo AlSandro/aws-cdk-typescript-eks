@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-wiremock
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/AlSandro/psychic-garbanzo.git
+    path: wiremock  
+    targetRevision: develop
+  destination: 
+    server: https://kubernetes.default.svc
+    namespace: wiremock
+
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+
+    automated:
+      selfHeal: true
+      prune: true

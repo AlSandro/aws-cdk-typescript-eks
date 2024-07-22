@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: http-status-alerts
+  namespace: prometheus
+spec:
+  groups:
+  - name: http.rules
+    rules:
+    - alert: HighNumberOf403s
+      expr: sum(rate(http_requests_total{status="403"}[1m])) > 10
+      for: 1m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High number of 403 HTTP responses"
+        description: "There have been more than 10 HTTP 403 responses in the last minute.\n  VALUE = {{ $value }}\n  LABELS: {{ $labels }}"

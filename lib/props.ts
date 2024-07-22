@@ -39,7 +39,7 @@ export interface IStackTags {
 }
 
 export const defaultStackTags: IStackTags = {
-    'eks:cluster-name': 'eks-cluster-1',
+    'eks:cluster-name': 'eks-cluster-alsandr',
     'eks:nodegroup-name': 'eks-nodegroup-1',
     'org': 'alsandr',
 };
@@ -49,14 +49,14 @@ export const bottlerocketNodeGroup: bottlerocketNodeGroup = {
     vpcCidr: '10.0.0.0/20',
     region: 'us-west-2',
     maxAzs: 2,
-    clusterName: 'eks-cluster-1',
+    clusterName: 'eks-cluster-alsandr',
     publicSubnetCidrMask: 24,
     privateSubnetCidrMask: 24,
     eksVersion: eks.KubernetesVersion.V1_28,
     instanceType: new ec2.InstanceType('t2.micro'),
     minSize: 3,
-    maxSize: 6,
-    desiredSize: 5,
+    maxSize: 7,
+    desiredSize: 6,
 }; 
 
 export const defaultCdkEksClusterStackProps: CdkEksClusterStackProps = {
@@ -64,14 +64,14 @@ export const defaultCdkEksClusterStackProps: CdkEksClusterStackProps = {
     vpcCidr: '10.0.0.0/20',
     region: 'us-west-2',
     maxAzs: 2,
-    clusterName: 'eks-cluster-1',
+    clusterName: 'eks-cluster-alsandr',
     publicSubnetCidrMask: 24,
     privateSubnetCidrMask: 24,
     eksVersion: eks.KubernetesVersion.V1_28,
     instanceType: new ec2.InstanceType('t2.micro'),
     minSize: 3,
-    maxSize: 6,
-    desiredSize: 5,
+    maxSize: 7,
+    desiredSize: 6,
 };
 
 

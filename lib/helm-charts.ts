@@ -17,15 +17,6 @@ interface HelmChart {
 const helmCharts: HelmChart[] = [
 
     {
-    chart: './charts/wiremock',
-    namespace: 'wiremock',
-    release: 'wiremock',
-    version: '9.4.1',
-    wait: false,
-    timeout: cdk.Duration.minutes(15),
-    }
-    ,
-    {
     chart: 'kube-prometheus-stack',
     repository: 'https://prometheus-community.github.io/helm-charts',
     namespace: 'prometheus',

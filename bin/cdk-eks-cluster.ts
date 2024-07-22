@@ -7,6 +7,6 @@ import { defaultCdkEksClusterStackProps, bottlerocketNodeGroup } from '../lib/pr
 const app = new cdk.App();
 
 // stack for the EKS cluster
-new CdkEksClusterStack(app, 'eks-cluster', defaultCdkEksClusterStackProps, bottlerocketNodeGroup);
+new CdkEksClusterStack(app, 'eks-cluster-alsandr', defaultCdkEksClusterStackProps, bottlerocketNodeGroup);
 
 app.synth();
