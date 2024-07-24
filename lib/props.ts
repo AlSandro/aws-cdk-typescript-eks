@@ -54,9 +54,9 @@ export const bottlerocketNodeGroup: bottlerocketNodeGroup = {
     privateSubnetCidrMask: 24,
     eksVersion: eks.KubernetesVersion.V1_28,
     instanceType: new ec2.InstanceType('t2.micro'),
-    minSize: 3,
-    maxSize: 7,
-    desiredSize: 6,
+    minSize: 1,
+    maxSize: 8,
+    desiredSize: 7,
 }; 
 
 export const defaultCdkEksClusterStackProps: CdkEksClusterStackProps = {
@@ -69,9 +69,9 @@ export const defaultCdkEksClusterStackProps: CdkEksClusterStackProps = {
     privateSubnetCidrMask: 24,
     eksVersion: eks.KubernetesVersion.V1_28,
     instanceType: new ec2.InstanceType('t2.micro'),
-    minSize: 3,
-    maxSize: 7,
-    desiredSize: 6,
+    minSize: 1,
+    maxSize: 8,
+    desiredSize: 7,
 };
 
 

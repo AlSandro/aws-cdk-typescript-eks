@@ -15,7 +15,6 @@ interface HelmChart {
 }
 
 const helmCharts: HelmChart[] = [
-
     {
     chart: 'kube-prometheus-stack',
     repository: 'https://prometheus-community.github.io/helm-charts',
@@ -85,6 +84,16 @@ const helmCharts: HelmChart[] = [
 //     wait: true,
 //     timeout: cdk.Duration.minutes(15),
 //   },
+// Metrics server
+// {
+//     chart: 'metrics-server',
+//     release: 'metrics-server',
+//     namespace: 'kube-system',
+//     repository: 'https://kubernetes-sigs.github.io/metrics-server/',
+//     version: '3.10.0',
+//     wait: true,
+//     timeout: (cdk.Duration.minutes(15)),
+// },
   // Secrets Store AWS Provider
 //   {
 //     chart: 'secrets-store-csi-driver-provider-aws',
@@ -95,16 +104,7 @@ const helmCharts: HelmChart[] = [
 //     wait: true,
 //     timeout: cdk.Duration.minutes(15),
 //   },
-  // metrics-server
-//   {
-//     chart: 'metrics-server',
-//     release: 'metrics-server',
-//     namespace: 'kube-system',
-//     repository: 'https://kubernetes-sigs.github.io/metrics-server/',
-//     version: '3.10.0',
-//     wait: true,
-//     timeout: (cdk.Duration.minutes(15)),
-//   },
+
 ];
 
 export { helmCharts };

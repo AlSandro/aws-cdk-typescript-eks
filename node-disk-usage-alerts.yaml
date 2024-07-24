@@ -1,4 +1,4 @@
-apiVersion: monitoring.coreos.com/v1
+leaapiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: node-disk-usage-alerts

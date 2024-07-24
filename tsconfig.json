@@ -1,4 +1,4 @@
-{
+{  
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
@@ -6,6 +6,9 @@
       "es2020",
       "dom"
     ],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,

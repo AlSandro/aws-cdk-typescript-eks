@@ -1,5 +1,4 @@
-{
-  
+{  
   "app": "npx ts-node --prefer-ts-exts bin/cdk-eks-cluster.ts",
   "watch": {
     "include": [
@@ -18,6 +17,7 @@
     ]
   },
   "context": {
+    "deployHelmCharts": true,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [

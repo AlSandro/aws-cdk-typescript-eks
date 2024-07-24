@@ -169,18 +169,24 @@ export class CdkEksClusterStack extends cdk.Stack {
     //   },
     // });
     // Multiple charts
-    helmCharts.forEach((chart) => {
-      this.cluster.addHelmChart(chart.release, {
-        chart: chart.chart,
-        repository: chart.repository,
-        namespace: chart.namespace,
-        version: chart.version,
-        wait: chart.wait,
-        timeout: chart.timeout,
-        values: chart.values,
-      });
-    });
+    
+    // Read the context value
+    // --context deployHelmCharts=true
+    const deployHelmCharts = this.node.tryGetContext('deployHelmCharts') ?? false;
 
+    if (deployHelmCharts) {
+      helmCharts.forEach((chart) => {
+          this.cluster.addHelmChart(chart.release, {
+          chart: chart.chart,
+          repository: chart.repository,
+          namespace: chart.namespace,
+          version: chart.version,
+          wait: chart.wait,
+          timeout: chart.timeout,
+          values: chart.values,
+        });
+      });
+    }
     // Cluster role and auth configurations
     const eksClusterRole = this.cluster.role;
     eksClusterRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSVPCResourceController'));
@@ -188,7 +194,7 @@ export class CdkEksClusterStack extends cdk.Stack {
     this.cluster.awsAuth.addUserMapping(iam.User.fromUserName(this, 'ExistingUser', 'awsalsandr'), { username: 'awsalsandr', groups: ['system:masters'] });
 
     // OIDC and cluster name to SSM parameters
-    new ssm.StringParameter(this, 'OIDCProvider', { parameterName: '/eks/oidc/provider', stringValue: this.cluster.openIdConnectProvider?.openIdConnectProviderArn?.toString() ?? '' });
-    new ssm.StringParameter(this, 'ClusterName', { parameterName: '/eks/cluster/name', stringValue: this.cluster.clusterName });
+    // new ssm.StringParameter(this, 'OIDCProvider', { parameterName: '/eks/oidc/provider', stringValue: this.cluster.openIdConnectProvider?.openIdConnectProviderArn?.toString() ?? '' });
+    // new ssm.StringParameter(this, 'ClusterName', { parameterName: '/eks/cluster/name', stringValue: this.cluster.clusterName });
   }
 }
